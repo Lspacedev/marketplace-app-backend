@@ -1,0 +1,80 @@
+#Marketplace App Api
+
+Problem: Create marketplace app api using mongodb as database.
+
+Requirements: 
+    Inputs:
+    1. Name
+    2. Price
+    3. Description
+    4. Timestamp
+    5. Location
+    6. Condition
+    7. Tags
+    8. Seller
+    9. Delivery - FREE | DEFAULT - R60
+    10. Status - pending | sold
+
+    Features:
+    Buyers:
+    Must be able to:
+    1. View all listings.
+    2. Buy product.
+    3. View bought products.
+    4. Write short review.
+   
+    Sellers:
+    Must be able to:
+    1. Add new product.
+    2. View already added products.
+    3. Update details of added products.
+    4. Delete added product.
+
+  
+
+
+Solution: 
+    Create api to handle requests and return reponses at the following endpoints.
+    Endpoints:
+        Index
+        1. POST /signup
+        2. POST /login
+        Users 
+        1. GET /users/:userId.
+        2. PUT /users/:userId.
+        3. DELETE /users/:userId.
+
+        Buyer:
+        1. GET /products.
+        2. GET /products/:productId.
+        3. PUT /products/:productId/buy.
+
+        Seller
+        1. GET /seller/:sellerId/products.
+        2. POST /seller/:sellerId/products.
+        3. PUT /seller/:sellerId/products/:productId.
+        4. DELETE /seller/:sellerId/products/:productId.
+        5. PUT /seller/:sellerId/products/:productId/hide.
+
+    Functions:
+        Buyer
+        1. getAllProducts.
+        2. getProductById.
+        3. buyProduct.
+
+        Seller
+        1. getSellerProducts.
+        2. getSellerProductById.
+        3. hideProduct.
+        4. updateProduct.
+        5. deleteProduct.
+
+    Folders:
+        1. Config.
+        2. Controllers.
+        3. Models.
+        4. Routes.
+
+
+
+   
