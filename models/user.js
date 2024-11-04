@@ -8,7 +8,9 @@ const userSchema = new mongoose.Schema({
   town: { type: String, required: true },
   city: { type: String, required: true },
   country: { type: String, required: true },
+  cart: [String],
   role: { type: String, required: true, default: "BUYER" },
+  profilePic: { type: String, required: false },
   createdAt: { type: Date, default: Date.now() },
 });
 const User = mongoose.model("User", userSchema);

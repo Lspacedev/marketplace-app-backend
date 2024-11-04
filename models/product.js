@@ -6,9 +6,9 @@ const productSchema = new mongoose.Schema({
   description: { type: String, required: true },
   location: { type: String, required: true },
   condition: { type: String, required: true },
-  tags: { type: Array },
+  tags: [String],
   delivery: { type: String, required: true, default: "Standard - R50" },
-  status: { type: String, required: true, default: "pending" },
+  status: { type: String, required: true, default: "PENDING" },
   images: { type: Array },
   createdAt: { type: Date, default: Date.now() },
 });

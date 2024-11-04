@@ -1,16 +1,12 @@
 import { Router } from "express";
 import publicController from "../controllers/publicController.js";
-import Authenticate from "../middleware/authenticate.js";
+import Authenticate from "../middleware/Authenticate.js";
 const publicRouter = Router();
 
-publicRouter.get("/", Authenticate, productController.getAllProducts);
+publicRouter.get("/", Authenticate, publicController.getAllProducts);
 
-publicRouter.get("/:productId", Authenticate, productController.getProductById);
+publicRouter.get("/:productId", Authenticate, publicController.getProductById);
 
-publicRouter.post(
-  "/:productId/buy",
-  Authenticate,
-  productController.buyProduct
-);
+publicRouter.put("/:productId/buy", Authenticate, publicController.buyProduct);
 
 export default publicRouter;

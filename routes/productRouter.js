@@ -1,7 +1,8 @@
 import { Router } from "express";
 import productController from "../controllers/productController.js";
-import Authenticate from "../middleware/authenticate.js";
+import Authenticate from "../middleware/Authenticate.js";
 import Authorize from "../middleware/Authorize.js";
+import uploadMiddleware from "../middleware/mutipleUpload.js";
 const productRouter = Router();
 
 productRouter.get("/", Authenticate, productController.getSellerProducts);
@@ -10,6 +11,7 @@ productRouter.post(
   "/",
   Authenticate,
   Authorize("SELLER"),
+  uploadMiddleware,
   productController.createProduct
 );
 productRouter.get(
