@@ -5,7 +5,12 @@ import Authorize from "../middleware/Authorize.js";
 import uploadMiddleware from "../middleware/mutipleUpload.js";
 const productRouter = Router();
 
-productRouter.get("/", Authenticate, productController.getSellerProducts);
+productRouter.get(
+  "/",
+  Authenticate,
+  Authorize("SELLER"),
+  productController.getSellerProducts
+);
 
 productRouter.post(
   "/",
@@ -17,6 +22,7 @@ productRouter.post(
 productRouter.get(
   "/:productId",
   Authenticate,
+  Authorize("SELLER"),
   productController.getSellerProductById
 );
 productRouter.put(
@@ -32,7 +38,7 @@ productRouter.delete(
   productController.deleteProduct
 );
 productRouter.put(
-  "/:productId",
+  "/:productId/hide",
   Authenticate,
   Authorize("SELLER"),
   productController.hideProduct

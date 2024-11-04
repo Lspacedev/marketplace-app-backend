@@ -2,7 +2,7 @@ import User from "../models/user.js";
 import { body, validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-const cloudinary = require("../config/cloudinary");
+import cloudinary from "../config/cloudinary.js";
 const alphaErr = "must only contain letters.";
 const lengthErr = "must be between 1 and 25 characters.";
 const passLengthErr = "must be between 5 and 25 characters.";
@@ -23,12 +23,12 @@ const validateRegister = [
   body("password")
     .isLength({ min: 5, max: 25 })
     .withMessage(`Password ${passLengthErr}`),
-  body("street")
-    .trim()
-    .isAlpha()
-    .withMessage(`Street ${alphaErr}`)
-    .isLength({ min: 1, max: 50 })
-    .withMessage(`Street ${streetLengthErr}`),
+  // body("street")
+  //   .trim()
+  //   .isAlpha()
+  //   .withMessage(`Street ${alphaErr}`)
+  //   .isLength({ min: 1, max: 50 })
+  //   .withMessage(`Street ${streetLengthErr}`),
   body("city")
     .trim()
     .isAlpha()
@@ -46,6 +46,8 @@ const validateRegister = [
 const userRegister = [
   validateRegister,
   async (req, res) => {
+    console.log(req.body);
+
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -54,35 +56,37 @@ const userRegister = [
       });
     }
     try {
-      const { originalname, path, size } = req.file;
       const { username, email, password, street, town, city, country } =
         req.body;
+
       const hashedPassword = await bcrypt.hash(password, 10);
       let imageUrl = "";
+      if (typeof req.file !== "undefined") {
+        const { originalname, path } = req.file;
+        //upload image
+        if (originalname !== "") {
+          const options = {
+            resource_type: "image",
+            public_id: originalname,
+          };
+          //upload to cloudinary
+          const result = await cloudinary.uploader.upload(
+            path,
+            options,
+            async function (err, result) {
+              if (err) {
+                console.log(err);
+                return res.status(500).json({
+                  success: false,
+                  message: err.message,
+                });
+              }
 
-      //upload image
-      if (originalname !== "") {
-        const options = {
-          resource_type: "image",
-          public_id: originalname,
-        };
-        //upload to cloudinary
-        const result = await cloudinary.uploader.upload(
-          path,
-          options,
-          async function (err, result) {
-            if (err) {
-              console.log(err);
-              return res.status(500).json({
-                success: false,
-                message: err.message,
-              });
+              return result;
             }
-
-            return result;
-          }
-        );
-        imageUrl = result.secure_url;
+          );
+          imageUrl = result.secure_url;
+        }
       }
       const user = await User.create({
         username,
@@ -187,7 +191,7 @@ async function updateUser(req, res) {
   }
 }
 
-async function updateUserRole() {
+async function updateUserRole(req, res) {
   try {
     const userId = req.user._id;
 
@@ -211,6 +215,7 @@ async function updateUserRole() {
 async function getCart(req, res) {
   try {
     const user = await User.findById(req.user._id);
+
     res.status(200).json(user.cart);
   } catch (error) {
     if (error.kind === "ObjectId") {
@@ -225,10 +230,11 @@ async function getCart(req, res) {
 async function addToCart(req, res) {
   try {
     const { productId } = req.body;
-    const user = User.updateOne(
+    const user = await User.updateOne(
       { _id: req.user._id },
-      { $addToSet: { cart: productId } }
+      { $push: { cart: productId } }
     );
+
     res.status(200).json(user.cart);
   } catch (error) {
     if (error.kind === "ObjectId") {
@@ -243,7 +249,7 @@ async function addToCart(req, res) {
 async function removeFromCart(req, res) {
   try {
     const { productId } = req.params;
-    const user = User.updateOne(
+    const user = await User.updateOne(
       { _id: req.user._id },
       { $pull: { cart: productId } }
     );

@@ -9,7 +9,7 @@ async function getBuyerReviews(req, res) {
       .skip(skip)
       .limit(limit);
     const totalReviews = reviews.length;
-    res.status(200).json({ products, totalReviews, page, limit });
+    res.status(200).json({ reviews, totalReviews, page, limit });
   } catch (error) {
     res.status(500).json({ error: "An error occured while fetching reviews." });
   }

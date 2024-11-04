@@ -1,4 +1,6 @@
 import Product from "../models/product.js";
+import cloudinary from "../config/cloudinary.js";
+
 async function uploadToCloud(originalname, path) {
   const options = {
     resource_type: "image",
@@ -24,14 +26,16 @@ async function uploadToCloud(originalname, path) {
 }
 async function createProduct(req, res) {
   try {
-    const files = req.files;
     let imageUrls = [];
-    if (files.length > 0) {
-      files.forEach((file) => {
-        const { originalname, path, size } = req.file;
-        let imageUrl = uploadToCloud(originalname, path);
-        imageUrls.push(imageUrl);
-      });
+    if (typeof req.files !== "undefined") {
+      const files = req.files;
+      if (files.length > 0) {
+        files.forEach((file) => {
+          const { originalname, path, size } = file;
+          let imageUrl = uploadToCloud(originalname, path);
+          imageUrls.push(imageUrl);
+        });
+      }
     }
     const { name, description, location, condition, tags, delivery } = req.body;
 

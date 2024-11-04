@@ -1,8 +1,7 @@
 import { Router } from "express";
 import indexController from "../controllers/indexController.js";
 import Authenticate from "../middleware/Authenticate.js";
-const upload = require("../middleware/upload.js");
-
+import upload from "../middleware/upload.js";
 const indexRouter = Router();
 indexRouter.post(
   "/register",
@@ -12,7 +11,7 @@ indexRouter.post(
 indexRouter.post("/login", indexController.userLogin);
 indexRouter.get("/cart", Authenticate, indexController.getCart);
 indexRouter.post("/cart", Authenticate, indexController.addToCart);
-indexRouter.post(
+indexRouter.delete(
   "/cart/:productId",
   Authenticate,
   indexController.removeFromCart
