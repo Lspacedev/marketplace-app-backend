@@ -44,7 +44,7 @@ Solution:
         2. PUT /users/:userId.
         3. DELETE /users/:userId.
 
-        Buyer:
+        Buyer/Public:
         1. GET /products.
         2. GET /products/:productId.
         3. PUT /products/:productId/buy.
