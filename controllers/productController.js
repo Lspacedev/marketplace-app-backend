@@ -13,42 +13,51 @@ async function uploadToCloud(originalname, path) {
     async function (err, result) {
       if (err) {
         console.log(err);
-        return res.status(500).json({
+        return {
           success: false,
           message: err.message,
-        });
+        };
       }
 
       return result;
     }
   );
-  return result.secure_url;
+  return { success: true, url: result.secure_url };
 }
 async function createProduct(req, res) {
+  console.log(req.files);
+  const { name, price, description, location, condition, tags, delivery } =
+    req.body;
+  let product;
   try {
     let imageUrls = [];
+
     if (typeof req.files !== "undefined") {
       const files = req.files;
       if (files.length > 0) {
-        files.forEach((file) => {
+        for (const file of files) {
           const { originalname, path, size } = file;
-          let imageUrl = uploadToCloud(originalname, path);
-          imageUrls.push(imageUrl);
-        });
+          let result = await uploadToCloud(originalname, path);
+          if (result.success !== false) {
+            imageUrls.push(result.url);
+          } else {
+            res.status(500).json({ error: result.message });
+          }
+        }
       }
     }
-    const { name, description, location, condition, tags, delivery } = req.body;
-
     const productObj = {
       sellerId: req.user._id,
       name,
+      price,
       description,
       location,
       condition,
       tags,
       delivery,
+      images: imageUrls,
     };
-    const product = await Product.create(productObj);
+    product = await Product.create(productObj);
 
     res.status(201).json(product);
   } catch (error) {
@@ -91,7 +100,8 @@ async function getSellerProductById(req, res) {
 async function updateProduct(req, res) {
   try {
     const { productId } = req.params;
-    const { name, description, location, condition, tags, delivery } = req.body;
+    const { name, price, description, location, condition, tags, delivery } =
+      req.body;
     let isUpdate = false;
     let updatedproduct;
     if (name !== "") {
@@ -99,6 +109,14 @@ async function updateProduct(req, res) {
         { _id: productId },
 
         { $set: { name: name } }
+      );
+      isUpdate = true;
+    }
+    if (price !== "") {
+      updatedproduct = await Product.updateOne(
+        { _id: productId },
+
+        { $set: { price: price } }
       );
       isUpdate = true;
     }

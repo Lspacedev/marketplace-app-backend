@@ -46,7 +46,6 @@ const validateRegister = [
 const userRegister = [
   validateRegister,
   async (req, res) => {
-
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -173,10 +172,11 @@ async function updateUser(req, res) {
       isUpdate = true;
     }
     if (password !== "") {
+      const hashedPassword = await bcrypt.hash(password, 10);
       updatedUser = await User.updateOne(
         { _id: userId },
 
-        { $set: { password: password } }
+        { $set: { password: hashedPassword } }
       );
       isUpdate = true;
     }
