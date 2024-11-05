@@ -5,7 +5,7 @@ import upload from "../middleware/upload.js";
 const indexRouter = Router();
 indexRouter.post(
   "/register",
-  upload.single("file"),
+  upload.single("profilePic"),
   indexController.userRegister
 );
 indexRouter.post("/login", indexController.userLogin);

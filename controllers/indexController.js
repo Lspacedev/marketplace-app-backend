@@ -46,7 +46,6 @@ const validateRegister = [
 const userRegister = [
   validateRegister,
   async (req, res) => {
-    console.log(req.body);
 
     const errors = validationResult(req);
 
@@ -98,7 +97,7 @@ const userRegister = [
         password: hashedPassword,
         profilePic: imageUrl,
       });
-      res.status(201).json({ message: "Registration successful" });
+      return res.status(201).json({ message: "Registration successful" });
     } catch (error) {
       console.error(error);
       return res
