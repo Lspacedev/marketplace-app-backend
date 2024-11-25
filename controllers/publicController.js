@@ -45,7 +45,7 @@ async function buyProduct(req, res) {
         );
         const user = await User.updateOne(
           { _id: req.user._id },
-          { $pull: { purchasedProducts: productId } }
+          { $pull: { purchasedProducts: {productId, seller: product.sellerId} } }
         );
         res.status(201).json(updatedProduct);
       }

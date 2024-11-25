@@ -25,8 +25,7 @@ async function uploadToCloud(originalname, path) {
   return { success: true, url: result.secure_url };
 }
 async function createProduct(req, res) {
-  console.log(req.files);
-  const { name, price, description, location, condition, tags, delivery } =
+  const { name, price, category, description, location, condition, tags, delivery } =
     req.body;
   let product;
   try {
@@ -50,6 +49,7 @@ async function createProduct(req, res) {
       sellerId: req.user._id,
       name,
       price,
+      category,
       description,
       location,
       condition,

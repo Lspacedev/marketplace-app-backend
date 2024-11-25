@@ -6,7 +6,7 @@ const reviewsRouter = Router();
 reviewsRouter.get("/", Authenticate, reviewsController.getBuyerReviews);
 
 reviewsRouter.post(
-  "/:sellerId/review",
+  "/",
   Authenticate,
   reviewsController.reviewSeller
 );

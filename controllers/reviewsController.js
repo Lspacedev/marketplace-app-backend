@@ -16,13 +16,12 @@ async function getBuyerReviews(req, res) {
 }
 async function reviewSeller(req, res) {
   try {
-    const { sellerId } = req.params;
-    const { text, rating } = req.body;
+    const { seller, rating, reviewText } = req.body;
 
     const reviewObj = {
       reviewer: req.user._id,
-      seller: sellerId,
-      text,
+      seller: seller,
+      text: reviewText,
       rating,
     };
     const review = await Review.create(reviewObj);
