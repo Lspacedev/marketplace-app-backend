@@ -1,32 +1,39 @@
 import Product from "../models/product.js";
 import cloudinary from "../config/cloudinary.js";
 
-async function uploadToCloud(originalname, path) {
+async function uploadToCloud(originalname, buffer, path) {
   const options = {
     resource_type: "image",
     public_id: originalname,
   };
-  //upload to cloudinary
-  const result = await cloudinary.uploader.upload(
-    path,
-    options,
-    async function (err, result) {
-      if (err) {
-        console.log(err);
-        return {
-          success: false,
-          message: err.message,
-        };
+  const result = await new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      options,
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
       }
+    );
 
-      return result;
-    }
-  );
+    uploadStream.end(buffer);
+  });
+
   return { success: true, url: result.secure_url };
 }
 async function createProduct(req, res) {
-  const { name, price, category, description, location, condition, tags, delivery } =
-    req.body;
+  const {
+    name,
+    price,
+    category,
+    description,
+    location,
+    condition,
+    tags,
+    delivery,
+  } = req.body;
   let product;
   try {
     let imageUrls = [];
@@ -36,7 +43,7 @@ async function createProduct(req, res) {
       if (files.length > 0) {
         for (const file of files) {
           const { originalname, path, size } = file;
-          let result = await uploadToCloud(originalname, path);
+          let result = await uploadToCloud(originalname, file.buffer, path);
           if (result.success !== false) {
             imageUrls.push(result.url);
           } else {
@@ -53,7 +60,7 @@ async function createProduct(req, res) {
       description,
       location,
       condition,
-      tags,
+      tags: JSON.parse(tags),
       delivery,
       images: imageUrls,
     };
@@ -61,6 +68,7 @@ async function createProduct(req, res) {
 
     res.status(201).json(product);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "An error occured while creating product." });
   }
 }

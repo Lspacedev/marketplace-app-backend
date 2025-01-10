@@ -50,13 +50,18 @@ const userRegister = [
 
     if (!errors.isEmpty()) {
       return res.status(500).json({
-        errors: errors.array(),
+        errors: errors.array().map((error) => error.msg),
       });
     }
     try {
       const { username, email, password, street, town, city, country } =
         req.body;
-
+      const [userExists] = await User.find({ username });
+      if (userExists) {
+        return res
+          .status(404)
+          .json({ errors: ["A user with that user name exists"] });
+      }
       const hashedPassword = await bcrypt.hash(password, 10);
       let imageUrl = "";
       if (typeof req.file !== "undefined") {
@@ -101,7 +106,7 @@ const userRegister = [
       console.error(error);
       return res
         .status(500)
-        .json({ error: "An error occured during registration" });
+        .json({ errors: ["An error occured during registration"] });
     }
   },
 ];
@@ -110,13 +115,13 @@ async function userLogin(req, res) {
   try {
     const { username, password } = req.body;
     const [user] = await User.find({ username });
-    if (user.length === 0) {
-      return res.status(404).json({ message: "User does not exist." });
+    if (!user) {
+      return res.status(404).json({ errors: ["User does not exist."] });
     }
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return res.status(401).json({ message: "Incorrect password" });
+      return res.status(404).json({ errors: ["Incorrect password"] });
     }
 
     const token = jwt.sign(
@@ -134,7 +139,7 @@ async function userLogin(req, res) {
       token,
     });
   } catch (error) {
-    res.status(500).json({ error: "An error occured while logging in." });
+    res.status(500).json({ errors: ["An error occured while logging in."] });
   }
 }
 async function getUser(req, res) {
@@ -229,6 +234,7 @@ async function getCart(req, res) {
 async function addToCart(req, res) {
   try {
     const { productId } = req.body;
+    console.log({ productId });
     const user = await User.updateOne(
       { _id: req.user._id },
       { $push: { cart: productId } }

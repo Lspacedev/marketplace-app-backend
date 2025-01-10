@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   city: { type: String, required: true },
   country: { type: String, required: true },
   cart: [String],
-  purchasedProducts: [String],
+  purchasedProducts: { type: Array },
   role: { type: String, required: true, default: "BUYER" },
   profilePic: { type: String, required: false },
   createdAt: { type: Date, default: Date.now() },

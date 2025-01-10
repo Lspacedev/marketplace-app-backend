@@ -34,6 +34,7 @@ async function buyProduct(req, res) {
   try {
     const { productId } = req.params;
     const product = await Product.findById(productId);
+
     if (req.user._id != product.sellerId) {
       if (product.status === "SOLD") {
         res.status(400).json({ error: "Product is already sold" });
@@ -45,7 +46,14 @@ async function buyProduct(req, res) {
         );
         const user = await User.updateOne(
           { _id: req.user._id },
-          { $pull: { purchasedProducts: {productId, seller: product.sellerId} } }
+          {
+            $push: {
+              purchasedProducts: {
+                productId: product.id,
+                seller: product.sellerId,
+              },
+            },
+          }
         );
         res.status(201).json(updatedProduct);
       }
@@ -53,6 +61,7 @@ async function buyProduct(req, res) {
       res.status(400).json({ error: "Cannot buy own product" });
     }
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({ error: "An error occured while updating product." });
   }
 }
