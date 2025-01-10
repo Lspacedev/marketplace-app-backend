@@ -269,6 +269,37 @@ async function removeFromCart(req, res) {
     }
   }
 }
+async function postGuestLoginForm(req, res) {
+  try {
+    const { username, password } = req.body;
+    const [user] = await User.find({ username: "Guest" });
+    if (!user) {
+      return res.status(404).json({ errors: ["User does not exist."] });
+    }
+    const match = await bcrypt.compare(password, "guestuser");
+
+    if (!match) {
+      return res.status(404).json({ errors: ["Incorrect password"] });
+    }
+
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        username: user.username,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "3h" }
+    );
+
+    return res.status(200).json({
+      message: "Auth Passed",
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({ errors: ["An error occured while logging in."] });
+  }
+}
 export default {
   userRegister,
   userLogin,
@@ -278,4 +309,5 @@ export default {
   getCart,
   addToCart,
   removeFromCart,
+  postGuestLoginForm,
 };

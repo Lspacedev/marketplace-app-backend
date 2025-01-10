@@ -9,6 +9,7 @@ indexRouter.post(
   indexController.userRegister
 );
 indexRouter.post("/login", indexController.userLogin);
+indexRouter.post("/guest-log-in", indexController.postGuestLoginForm);
 indexRouter.get("/cart", Authenticate, indexController.getCart);
 indexRouter.post("/cart", Authenticate, indexController.addToCart);
 indexRouter.delete(
