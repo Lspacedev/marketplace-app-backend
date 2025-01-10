@@ -65,7 +65,7 @@ const userRegister = [
       const hashedPassword = await bcrypt.hash(password, 10);
       let imageUrl = "";
       if (typeof req.file !== "undefined") {
-        const { originalname, path } = req.file;
+        const { originalname, buffer, path } = req.file;
         //upload image
         if (originalname !== "") {
           const options = {
@@ -73,21 +73,21 @@ const userRegister = [
             public_id: originalname,
           };
           //upload to cloudinary
-          const result = await cloudinary.uploader.upload(
-            path,
-            options,
-            async function (err, result) {
-              if (err) {
-                console.log(err);
-                return res.status(500).json({
-                  success: false,
-                  message: err.message,
-                });
+          const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              options,
+              (error, result) => {
+                if (error) {
+                  reject(error);
+                } else {
+                  resolve(result);
+                }
               }
+            );
 
-              return result;
-            }
-          );
+            uploadStream.end(buffer);
+          });
+
           imageUrl = result.secure_url;
         }
       }
