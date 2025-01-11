@@ -3,7 +3,7 @@ import User from "../models/user.js";
 
 async function getAllProducts(req, res) {
   try {
-    const { page = 1, limit = 5 } = req.query;
+    const { page = 1, limit = 50 } = req.query;
     const skip = (page - 1) * limit;
 
     const products = await Product.find().skip(skip).limit(limit);

@@ -74,7 +74,7 @@ async function createProduct(req, res) {
 }
 async function getSellerProducts(req, res) {
   try {
-    const { page = 1, limit = 5 } = req.query;
+    const { page = 1, limit = 50 } = req.query;
     const skip = (page - 1) * limit;
 
     const products = await Product.find({ sellerId: req.user._id })
