@@ -276,7 +276,7 @@ async function postGuestLoginForm(req, res) {
     if (!user) {
       return res.status(404).json({ errors: ["User does not exist."] });
     }
-    const match = await bcrypt.compare(password, "guestuser");
+    const match = await bcrypt.compare("guestuser", user.password);
 
     if (!match) {
       return res.status(404).json({ errors: ["Incorrect password"] });
@@ -297,6 +297,7 @@ async function postGuestLoginForm(req, res) {
       token,
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ errors: ["An error occured while logging in."] });
   }
 }
