@@ -150,9 +150,8 @@ Endpoints
 
 #### Reviews Router:
 
-- Get all products.
-- Get individual product.
-- Buy product
+- Get all buyer's reviews.
+- Add a review.
 
 Endpoints
 
