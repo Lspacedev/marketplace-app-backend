@@ -234,7 +234,6 @@ async function getCart(req, res) {
 async function addToCart(req, res) {
   try {
     const { productId } = req.body;
-    console.log({ productId });
     const user = await User.updateOne(
       { _id: req.user._id },
       { $push: { cart: productId } }
@@ -272,11 +271,14 @@ async function removeFromCart(req, res) {
 async function postGuestLoginForm(req, res) {
   try {
     const { username, password } = req.body;
-    const [user] = await User.find({ username: "Guest" });
+    const [user] = await User.find({ username: process.env.GUEST_USERNAME });
     if (!user) {
       return res.status(404).json({ errors: ["User does not exist."] });
     }
-    const match = await bcrypt.compare("guestuser", user.password);
+    const match = await bcrypt.compare(
+      process.env.GUEST_PASSWORD,
+      user.password
+    );
 
     if (!match) {
       return res.status(404).json({ errors: ["Incorrect password"] });
